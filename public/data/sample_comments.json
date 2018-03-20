@@ -1,0 +1,23 @@
+{
+    "comment_1": {
+		"parent": null,
+        "by": "name1",
+        "time": "timestamp",
+        "content":"Work article",
+        "reply": null
+    },
+    "comment_2": {
+		"parent": null,
+        "by": "name2",
+        "time": "timestamp",
+        "content":"Great work",
+        "reply": "comment_3"
+	},
+    "comment_3": {
+		"parent": "comment_2",
+        "by": "name3",
+        "time": "timestamp",
+        "content":"yes",
+        "reply": null
+	}
+}

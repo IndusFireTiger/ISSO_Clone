@@ -1,0 +1,22 @@
+{
+  "name": "isso_clone",
+  "version": "1.0.0",
+  "description": "clone ISSO a commenting server",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IndusFireTiger/ISSO_Clone.git"
+  },
+  "author": "Sindhu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IndusFireTiger/ISSO_Clone/issues"
+  },
+  "homepage": "https://github.com/IndusFireTiger/ISSO_Clone#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
