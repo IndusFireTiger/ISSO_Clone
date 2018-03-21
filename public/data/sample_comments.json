@@ -1,22 +1,22 @@
 {
     "comment_1": {
 		"parent": null,
-        "by": "name1",
-        "time": "timestamp",
+        "by": "Will",
+        "time": "Tue Mar 19 2018 23:06:39 GMT+0530 (India Standard Time)",
         "content":"Good article",
         "reply": null
     },
     "comment_2": {
 		"parent": null,
-        "by": "name2",
-        "time": "timestamp",
+        "by": "Mick",
+        "time": "Mon Mar 18 2018 12:06:39 GMT+0530 (India Standard Time)",
         "content":"Great work",
         "reply": "comment_3"
 	},
     "comment_3": {
 		"parent": "comment_2",
-        "by": "name3",
-        "time": "timestamp",
+        "by": "John",
+        "time": "Sun Mar 17 2018 12:06:39 GMT+0530 (India Standard Time)",
         "content":"yes",
         "reply": null
 	}

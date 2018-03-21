@@ -35,7 +35,7 @@ let addComment = (data) => {
     comDiv.appendChild(name)
     name.appendChild(time)
     comDiv.appendChild(cont)
-    comment.appendChild(comDiv)
+    comment.insertBefore(comDiv, comment.firstChild)
 }
 
 let preloadComments = (data) => {
