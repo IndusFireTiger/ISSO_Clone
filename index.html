@@ -10,7 +10,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" type=text/css href="/id/public/style.css">
+    <link rel="stylesheet" type=text/css href="/public/style.css">
     </style>
 </head>
 
@@ -21,9 +21,11 @@
                 <h4>XYZ's Blog</h4>
             </div>
             <div class="col-sm-9">
+                <div id="article"></div>
+                <br>
                 <div id="post_x">
                     <h4>Leave a Comment:</h4>
-                    <form role="form" id="btnAddComment" method="post" action="/addNewComment">
+                    <form id="btnAddComment" method="post" action="/addNewComment">
                         <div class="form-group">
                             <textarea id="comment-input" class="form-control" rows="3" name="comment" required></textarea>
                             <input id="comment-name" class="form-control" name="name" placeholder="name (optional)"></input>
@@ -35,7 +37,7 @@
             </div>
         </div>
     </div>
-    <script src="/id/public/script.js">        
+    <script src="/public/script.js">        
     </script>
 </body>
 

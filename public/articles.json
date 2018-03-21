@@ -1,0 +1,26 @@
+{
+    "articles": [
+        {
+            "title": "My First Article",
+            "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. commodo consequat. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. commodo consequat. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+            "postId": 328572,
+            "comments": [                
+                {
+                    "parent": null,
+                    "by": "Mick",
+                    "commentId": 324951,
+                    "time": "Mon Mar 18 2018 12:06:39 GMT+0530 (India Standard Time)",
+                    "content": "Well done",
+                    "reply": null
+                },{
+                    "parent": null,
+                    "by": "Will",
+                    "commentId": 528710,
+                    "time": "Wed Mar 21 2018 22:42:24 GMT+0530 (India Standard Time)",
+                    "content": "Good article",
+                    "reply": null
+                }
+            ]
+        }
+    ]
+}
