@@ -20,10 +20,6 @@ app.get('/', function(req, res){
     res.sendFile(path.join(__dirname, '/index.html'))
 })
 
-app.get('/sindhu', (req, res) => {
-    res.write('Hi')
-})
-
 app.post('/addNewComment', function(req, res) {
     console.log('request to add new comment')
     console.log(req.body)
