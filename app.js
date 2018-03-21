@@ -1,22 +1,27 @@
-let express = require('express')
-let path = require('path')
-let app = express()
-let bodyParser = require('body-parser')
+const express = require('express'),
+    app = express(),
+    server = require('http').Server(app),
+    io = require('socket.io')(server),
+    path = require('path'),
+    bodyParser = require('body-parser')
 
-
-// var jsonParser = bodyParser.json()
-// var urlencodedParser = bodyParser.urlencoded({ extended: false })
+server.listen('5432')
+//Middlewares
 app.use(bodyParser.urlencoded())
 app.use(bodyParser.json())
 app.use(bodyParser.text())
-
 app.use('/', function (req, res, next) {
     console.log("url:" + req.url)
     next()
 })
-app.use('/public', express.static('public'))
+app.use('/id/public', express.static('public'))
 
+//Handlers
 app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname, '/index.html'))
+})
+app.get('/id/:id', function (req, res) {
+    console.log(req.params.id)
     res.sendFile(path.join(__dirname, '/index.html'))
 })
 app.post('/addNewComment', function (req, res) {
@@ -28,6 +33,18 @@ app.post('/addNewComment', function (req, res) {
     //     comment: req.body.comment
     // }))
 })
-app.listen('5432', function () {
-    console.log('listening on port 5432...')
+
+//Socket communication
+io.on('connection', soc => {
+    console.log('server connected to socket')
+    soc.emit('news', { serverSays: 'Hello Client' })
+    soc.on('my other event', data => console.log(data))
+    soc.on('newComment', data => {
+        io.sockets.emit('updateClients', data)
+        console.log("got new comment on soc "+data)
+    })
 })
+
+// app.listen('5432', function () {
+//     console.log('listening on port 5432...')
+// })

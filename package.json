@@ -18,6 +18,7 @@
   "homepage": "https://github.com/IndusFireTiger/ISSO_Clone#readme",
   "dependencies": {
     "body-parser": "^1.18.2",
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "socket.io": "^2.0.4"
   }
 }
