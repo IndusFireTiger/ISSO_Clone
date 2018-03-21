@@ -7,3 +7,14 @@
             background-color: #b6afaf;
             height: 100%;
         }
+
+        .col-sm-10{
+            width : 100%;
+        }
+
+        .well{
+            padding: 0px;
+            padding-left: 20px;
+            margin-bottom: 10px;
+            background-color:  #f3eded;
+        }

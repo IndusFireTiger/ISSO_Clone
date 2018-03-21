@@ -1,7 +1,9 @@
 const btnAddNewComment = document.querySelector("#btnAddComment")
 const newComment = document.querySelector("#comment-input")
+const commenter = document.querySelector("#comment-name")
+
 let populateComments = (comments) => {
-    for(let com of Object.entries(comments)){
+    for (let com of Object.entries(comments)) {
         // console.log(com)
         preloadComments(com[1])
     }
@@ -10,28 +12,38 @@ let populateComments = (comments) => {
 
 let addComment = (data) => {
     let comment = document.getElementById("comment_x")
-    let name = document.createElement("p")
+    let name = document.createElement("h4")
+    let time = document.createElement("small")
     let cont = document.createElement("p")
-    console.log("data to append "+data)
-    if(data !== null && data !== undefined){
+    let comDiv = document.createElement("div")
+    comDiv.setAttribute("class", "col-sm-10 well")
+
+    console.log("data to append " + data)
+    if (data !== null && data !== undefined) {
+        name.textContent = data['by'] + "  "
+        time.textContent = data['time']
         cont.textContent = data['content']
-        name.textContent = data['by']
         console.log(data['by'])
-        comment.appendChild(name)
     }
-    else{
+    else {
         cont.textContent = newComment.value
+        name.textContent = commenter.value + "  "
+        let date = Date()
+        time.textContent = date
     }
     // comment.setAttribute("class", ".container")
-    comment.appendChild(cont)
+    comDiv.appendChild(name)
+    name.appendChild(time)
+    comDiv.appendChild(cont)
+    comment.appendChild(comDiv)
 }
 
 let preloadComments = (data) => {
-    console.log('preloading:'+data['by'])
-    console.log('preloading:'+data['content'])
-    
+    console.log('preloading:' + data['by'])
+    console.log('preloading:' + data['content'])
+
     let block = document.getElementById("post_x")
-    if(!document.getElementById("comment_x")){
+    if (!document.getElementById("comment_x")) {
         let comment = document.createElement("div")
         comment.setAttribute("class", ".container")
         comment.setAttribute("id", "comment_x")
@@ -44,7 +56,7 @@ let fetchData = dataNeeded => {
     let fetchedData = fetch(dataNeeded)
         .then(function (response) {
             console.log(response)
-            return response.json()  
+            return response.json()
         })
         .then(function (myJSON) {
             console.log(myJSON)
