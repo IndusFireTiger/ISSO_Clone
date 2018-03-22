@@ -1,28 +1,19 @@
-const btnAddNewComment = document.querySelector("#btnAddComment")
-const articleDiv = document.querySelector("#article")
-const newComment = document.querySelector("#comment-input")
-const commenter = document.querySelector("#comment-name")
-const soc = io.connect('http://localhost:5432')
+const btnAddNewComment = document.querySelector("#btnAddComment"),
+    artListDiv = document.querySelector("#artList"),
+    articleDiv = document.querySelector("#article"),
+    newComment = document.querySelector("#comment-input"),
+    commenter = document.querySelector("#comment-name"),
 
-const docId = window.location.pathname.split('/')
-console.log(soc)
-console.log(docId)
+    docId = window.location.pathname.split('/')
+let artId
 
-soc.on('news', data => {
-    console.log('client recieved news')
-    console.log(data)
-    soc.emit('clientreply', {clientSays:'hey Server'})
-})
-soc.on('updateClients', data =>{
-    console.log('update comment from soc:' + data)
-    console.log('commentId:' + data.commentId)
-    addComment(data)
-})
 
 let populateArticles = (articles) => {
     for (let art of Object.entries(articles)) {
         console.log("art:")
         console.log(art)
+        artId = art[1][0].postId
+        console.log('artId:' + artId)
         preloadArticles(art[1])
         populateComments(art[1][0].comments)
     }
@@ -33,7 +24,7 @@ let populateComments = (comments) => {
     }
 }
 let newCommentEvent = () => {
-    soc.emit('newComment',{content: newComment.value,by:commenter.value,time:Date()})
+    soc.emit('newComment', { id: artId, content: newComment.value, by: commenter.value, time: Date() })
 }
 let addArticle = (data) => {
 
@@ -97,4 +88,23 @@ let fetchData = dataNeeded => {
     return fetchedData
 }
 
-let data = fetchData('/public/articles.json')
+let data = fetchData('/public/articles.json'),
+    soc = io.connect('http://localhost:5432')
+console.log(soc)
+console.log(docId)
+
+soc.on('connect', () => {
+    console.log('client connected thru socket -room:' + artId)
+    soc.emit('join room', { id: artId })
+})
+soc.on('news', data => {
+    console.log('client recieved news')
+    console.log(data)
+    soc.emit('clientreply', { clientSays: 'hey Server' })
+})
+soc.on('updateClients', data => {
+    console.log('update comment from soc:' + data)
+    console.log('artId:' + data.id)
+    console.log('commentId:' + data.commentId)
+    addComment(data)
+})

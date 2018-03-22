@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded())
 app.use(bodyParser.json())
 app.use(bodyParser.text())
 app.use('/', function (req, res, next) {
-    console.log('accessing:'+__dirname+req.url)
+    console.log(__dirname+req.url)
     next()
 })
 app.use('/public', express.static('public'))
@@ -29,10 +29,15 @@ app.post('/addNewComment', function (req, res) {
 io.on('connection', soc => {
     console.log('server connected to socket')
     soc.emit('news', { serverSays: 'Hello Client' })
+    soc.on('join room', (data) => {
+        console.log('client joined:'+data.id)
+        soc.join(data.id)
+    })
     soc.on('clientreply', data => console.log(data))
     soc.on('newComment', data => {
         data.commentId = Math.floor((Math.random() * 1000000))
-        io.sockets.emit('updateClients', data)
+        console.log('new msg on:'+data.id)
+        io.to(data.id).emit('updateClients', data)
         console.log("got new comment on soc "+data)
 
     })
