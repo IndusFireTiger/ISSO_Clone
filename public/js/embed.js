@@ -61,7 +61,7 @@ let addComment = (data) => {
     comment.insertBefore(comDiv, comment.firstChild)
 }
 
-soc = io.connect('http://localhost:5432')
+soc = io.connect('http://192.168.0.120:5432')
 soc.on('connect', () => {
     soc.emit('join room', { id: artId })
     console.log('client connected thru socket -room:' + artId)
