@@ -29,7 +29,6 @@ let loadISSO_Clone = () => {
 
 loadISSO_Clone()
 
-
 let newComment = document.querySelector("#comment-input"),
     commenter = document.querySelector("#comment-name")
 
