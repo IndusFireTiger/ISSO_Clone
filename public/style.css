@@ -1,10 +1,12 @@
-
+        #blogOwner{
+            color:white;
+        }
         .row.content {
             height: 1500px
         }
 
         .sidenav {
-            background-color: #b6afaf;
+            background-color:rgb(36, 67, 85);
             height: 100%;
         }
 
@@ -16,5 +18,18 @@
             padding: 0px;
             padding-left: 20px;
             margin-bottom: 10px;
-            background-color:  #f3eded;
+            background-color: white;
+        }
+
+        .artBlock{
+            background-color: rgb(212, 235, 248);
+        }
+
+        #artList{
+            list-style-type: none;
+        }
+
+        #artList li a{
+            color: white;
+            font-size: 16px;
         }

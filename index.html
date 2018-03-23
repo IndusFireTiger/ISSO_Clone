@@ -16,29 +16,25 @@
 
 <body>
     <div class="container-fluid">
-        <div class="row content">
+        <div class="row content  artBlock">
             <div class="col-sm-3 sidenav">
-                <h4>XYZ's Blog</h4>
-                <div id="artList"></div>
+                <h3 id='blogOwner'>XYZ's Blog</h3>
+                <br><br>
+                <ul id="artList"></ul>
             </div>
             <div class="col-sm-9">
                 <div id="article"></div>
                 <br>
                 <div id="post_x">
-                    <h4>Leave a Comment:</h4>
-                    <!-- <form id="btnAddComment" method="post" action="/addNewComment"> -->
-                        <div class="form-group">
-                            <textarea id="comment-input" class="form-control" rows="3" name="comment" required></textarea>
-                            <input id="comment-name" class="form-control" name="name" placeholder="name (optional)"></input>
-                        </div>
-                        <button type="submit" class="btn btn-success" onclick="newCommentEvent()">Submit</button>
-                    <!-- </form> -->
-                    <br>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        let artId = 11111    
+    </script>
     <script src="/public/script.js"></script>
+    <script src="/public/soc.js"></script>
 </body>
 
 </html>

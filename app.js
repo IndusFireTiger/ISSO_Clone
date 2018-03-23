@@ -25,12 +25,18 @@ app.post('/addNewComment', function (req, res) {
     console.log(req.body)
 })
 
+app.get('/art/:docId', function (req, res) {
+    let docId = req.url.split('/')[2]
+    console.log('docId:'+docId)
+    // res.end()
+  })
 //Socket communication
 io.on('connection', soc => {
     console.log('server connected to socket')
     soc.emit('news', { serverSays: 'Hello Client' })
     soc.on('join room', (data) => {
         console.log('client joined:'+data.id)
+        console.log('soc id:'+soc.id)
         soc.join(data.id)
     })
     soc.on('clientreply', data => console.log(data))
