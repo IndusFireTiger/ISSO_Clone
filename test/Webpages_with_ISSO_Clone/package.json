@@ -1,0 +1,14 @@
+{
+  "name": "webpages_with_isso_clone",
+  "version": "1.0.0",
+  "description": "Third party website using ISSO_Clone",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sindhu",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}

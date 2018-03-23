@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>XYZ Blog Space</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type=text/css href="/public/style.css">
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row content  artBlock">
+            <div class="col-sm-3 sidenav">
+                <h3 id='blogOwner'>XYZ's Blog</h3>
+            </div>
+            <div class="col-sm-9">
+                <div id="article">
+                </div>
+                <br>
+                <div id="post_x">
+                </div>
+                <script>
+                    let artId = 11111    
+                </script>
+                <script>
+                        (function () {
+                            let script_io = document.createElement('script')
+                            script_io.src = 'http://localhost:5432/socket.io/socket.io.js'
+                            document.body.appendChild(script_io)
+                            
+                            let script_embed = document.createElement('script')
+                            script_embed.src = 'http://localhost:5432/public/embed.js'
+                            document.body.appendChild(script_embed)
+                        })()
+                </script>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
