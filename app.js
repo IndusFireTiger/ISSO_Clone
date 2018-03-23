@@ -33,7 +33,6 @@ app.get('/art/:docId', function (req, res) {
 //Socket communication
 io.on('connection', soc => {
     console.log('server connected to socket')
-    soc.emit('news', { serverSays: 'Hello Client' })
     soc.on('join room', (data) => {
         console.log('client joined:'+data.id)
         console.log('soc id:'+soc.id)

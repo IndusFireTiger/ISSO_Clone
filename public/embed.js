@@ -22,6 +22,8 @@ let loadISSO_Clone = () => {
     formDiv.appendChild(inputName)
     commentDiv.appendChild(formDiv)
     commentDiv.appendChild(submitBtn)
+    commentDiv.appendChild(document.createElement('br'))
+    commentDiv.appendChild(document.createElement('br'))
 }
 
 loadISSO_Clone()
@@ -60,21 +62,14 @@ let addComment = (data) => {
     comDiv.appendChild(cont)
     comment.insertBefore(comDiv, comment.firstChild)
 }
-soc = io.connect('http://localhost:5432')
-console.log(soc)
 
+
+soc = io.connect('http://localhost:5432')
 soc.on('connect', () => {
-    console.log('client connected thru socket -room:' + artId)
     soc.emit('join room', { id: artId })
-})
-soc.on('news', data => {
-    console.log('client recieved news')
-    console.log(data)
-    soc.emit('clientreply', { clientSays: 'hey Server' })
+    console.log('client connected thru socket -room:' + artId)
 })
 soc.on('updateClients', data => {
-    console.log('update comment from soc:' + data)
-    console.log('artId:' + data.id)
-    console.log('commentId:' + data.commentId)
+    console.log('soc event - update comment: ' + 'commentId ' + data.commentId + ' for artId:' + data.id)
     addComment(data)
 })
