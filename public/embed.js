@@ -1,18 +1,19 @@
 const commentDiv = document.querySelector('#post_x')
 
 let loadISSO_Clone = () => {
-    let commentHead = document.createElement('h4')
+    let commentHead = document.createElement('h4'),
+     formDiv = document.createElement('div'),
+     textarea = document.createElement('textarea'),
+     inputName = document.createElement('input'),
+     submitBtn = document.createElement('button')
+
     commentHead.innerHTML = 'Leave a Comment:'
-    let formDiv = document.createElement('div')
     formDiv.setAttribute('class', 'form-group')
-    let textarea = document.createElement('textarea')
     textarea.setAttribute('id', 'comment-input')
     textarea.setAttribute('class', 'form-control')
-    let inputName = document.createElement('input')
     inputName.setAttribute('id', 'comment-name')
     inputName.setAttribute('class', 'form-control')
     inputName.setAttribute('placeholder', 'name (optional)')
-    let submitBtn = document.createElement('button')
     submitBtn.setAttribute('class', 'btn btn-success')
     submitBtn.setAttribute('onclick', 'newCommentEvent()')
     submitBtn.innerHTML = 'Submit'
@@ -33,8 +34,6 @@ let newComment = document.querySelector("#comment-input"),
     commenter = document.querySelector("#comment-name")
 
 let newCommentEvent = () => {
-    console.log(newComment)
-    console.log(commenter)
     soc.emit('newComment', { id: artId, content: newComment.value, by: commenter.value, time: Date() })
 }
 let addComment = (data) => {
@@ -44,11 +43,11 @@ let addComment = (data) => {
         comment.setAttribute("id", "comment_x")
         commentDiv.appendChild(comment)
     }
-    let comment = document.getElementById("comment_x")
-    let name = document.createElement("h4")
-    let time = document.createElement("small")
-    let cont = document.createElement("p")
-    let comDiv = document.createElement("div")
+    let comment = document.getElementById("comment_x"),
+     name = document.createElement("h4"),
+     time = document.createElement("small"),
+     cont = document.createElement("p"),
+     comDiv = document.createElement("div")
     comDiv.setAttribute("class", "col-sm-10 well")
 
     if (data !== null && data !== undefined) {
@@ -62,7 +61,6 @@ let addComment = (data) => {
     comDiv.appendChild(cont)
     comment.insertBefore(comDiv, comment.firstChild)
 }
-
 
 soc = io.connect('http://localhost:5432')
 soc.on('connect', () => {
