@@ -14,7 +14,7 @@ app.use('/', function (req, res, next) {
     console.log(__dirname+req.url)
     next()
 })
-app.use('/public', express.static('public'))
+app.use(express.static('public'))
 
 //Handlers
 app.get('/', function (req, res) {    
