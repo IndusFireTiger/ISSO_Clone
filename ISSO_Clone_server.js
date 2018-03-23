@@ -5,7 +5,8 @@ const express = require('express'),
     path = require('path'),
     bodyParser = require('body-parser')
 
-server.listen('5432')
+server.listen('5432', function(){console.log('ISSO_Clone server running on 5432...')})
+
 //Middlewares
 app.use(bodyParser.urlencoded())
 app.use(bodyParser.json())

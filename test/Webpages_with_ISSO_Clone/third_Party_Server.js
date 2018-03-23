@@ -2,7 +2,7 @@ const express = require('express'),
     app = express(),
     path = require('path')
 
-app.listen('9000', function(){console.log('third party website server on 9000...')})
+app.listen('9000', function(){console.log('third party website server running on 9000...')})
 
 //Middlewares
 app.use('/', function (req, res, next) {
