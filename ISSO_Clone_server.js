@@ -8,9 +8,6 @@ const express = require('express'),
 server.listen('5432', function(){console.log('ISSO_Clone server running on 5432...')})
 
 //Middlewares
-// app.use(bodyParser.urlencoded())
-// app.use(bodyParser.json())
-// app.use(bodyParser.text())
 app.use('/', function (req, res, next) {
     console.log(__dirname+req.url)
     next()
