@@ -5,6 +5,7 @@ const io = require('socket.io')(server)
 const path = require('path')
 const bodyParser = require('body-parser')
 const mongo = require('mongodb').MongoClient
+var cors = require('cors')
 
 server.listen('5432', function () { console.log('ISSO_Clone server running on 5432...') })
 let ISSO_DB
@@ -23,6 +24,7 @@ app.use('/', function (req, res, next) {
   console.log(__dirname + req.url)
   next()
 })
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(express.static('public'))
@@ -35,13 +37,22 @@ app.get('/', function (req, res) {
 app.post('/threadDetails', async function (req, res) {
   let art = req.body.thread
   console.log('get route for threadDetails for :', art)
-  let comments = await ISSO_DB.collection('comments').find({post_id: art}).toArray()
-  console.log('data from db:', comments)
-  res.header(res.setHeader('Content-Type', 'application/json'))
-  res.write(JSON.stringify(comments))
+  let comments = await ISSO_DB.collection('comments').find({thread_id: parseInt(art)}).toArray()
+  // console.log('data from db:', comments)
+  res.header('Content-Type', 'application/json')
+  // res.header('Access-Control-Allow-Origin', 'http://localhost:9000')
+  res.send(JSON.stringify(comments))
 //   res.sendFile(path.join(__dirname, '/index.html'))
 })
 
+app.post('/saveComment', async function (req, res) {
+  let data = req.body.app_id
+  let commentJSON = {'app_id': 'xyzBlog', 'thread_id': 111111, 'id': 111111, 'parent_id': null, 'content': 'new', 'msg': 'new', 'by': 'sindhu', 'user_id': null, 'time': 'Wed Apr 11 2018 16:00:48 GMT 0530 (India Standard Time)'}
+  console.log('route save comment:', data)
+  commentJSON = JSON.parse(commentJSON)
+  let saved = await ISSO_DB.collection('comments').insert(commentJSON)
+  console.log('saved?', saved)
+})
 // Socket communication
 io.on('connection', soc => {
   console.log('server connected to socket')

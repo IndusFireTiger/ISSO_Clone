@@ -27,20 +27,24 @@ const loadISSO_Clone = () => {
   commentDiv.appendChild(document.createElement('br'))
 }
 
-function loadComments () {
+function loadComments() {
   let url = 'http://localhost:5432/threadDetails'
   console.log('fetching commented for article: ', artId)
   fetch(url, {
     method: 'POST',
-    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-    body: 'thread=' + artId,
-    mode: 'no-cors'
-
-  }).then(response => cache.put(request, response)
-  ).then((commentsJSON) => {
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({thread: artId})
+    // mode: 'no-cors'
+  }).then((res) => {
+    console.log('in res block:', res)
+    return res.json()
+  }).then((commentsJSON) => {
     console.log('comments:', commentsJSON)
+    commentsJSON.forEach(item => {
+      addComment(item)
+    })
   }).catch((error) => {
-    console.log("could not fetch : " + url)
+    console.log('could not fetch : ' + url)
     console.error(error)
   })
   console.log('fetched')
@@ -53,7 +57,32 @@ let newComment = document.querySelector('#comment-input')
 let commenter = document.querySelector('#comment-name')
 
 let newCommentEvent = () => {
-  soc.emit('newComment', { id: artId, content: newComment.value, by: commenter.value, time: Date() })
+  let formData = new FormData()
+  formData.append('app_id', 'xyzBlog')
+  console.log('form data:', formData)
+  let commentJSON = {
+    app_id: 'xyzBlog',
+    thread_id: artId,
+    id: artId,
+    parent_id: null,
+    content: newComment.value,
+    msg: newComment.value,
+    by: commenter.value,
+    user_id: null,
+    time: Date()
+  }
+  let url = 'http://localhost:5432/saveComment'
+  console.log('saving comment ', commentJSON)
+  fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    // headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: JSON.stringify(commentJSON)
+  }).then((res) => {
+    console.log('in res block:', res)
+    return res.json()
+  })
+  soc.emit('newComment', commentJSON)
 }
 let addComment = (data) => {
   if (!document.getElementById('comment_x')) {
