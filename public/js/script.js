@@ -1,8 +1,8 @@
-let script_io = document.createElement('script')
-script_io.src = 'http://192.168.0.120:5432/socket.io/socket.io.js'
-script_io.onload = function () {
-    let script_embed = document.createElement('script')
-    script_embed.src = 'http://192.168.0.120:5432/js/embed.js'
-    document.body.appendChild(script_embed)
+let scriptIo = document.createElement('script')
+scriptIo.src = 'http://localhost:5432/socket.io/socket.io.js'
+scriptIo.onload = function () {
+  let scriptEmbed = document.createElement('script')
+  scriptEmbed.src = 'http://localhost:5432/js/embed.js'
+  document.body.appendChild(scriptEmbed)
 }
-document.body.appendChild(script_io)
+document.body.appendChild(scriptIo)
