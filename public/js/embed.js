@@ -40,8 +40,15 @@ function loadComments() {
     return res.json()
   }).then((commentsJSON) => {
     console.log('comments:', commentsJSON)
+    let replies = []
     commentsJSON.forEach(item => {
-      addComment(item)
+      let isReply = addComment(item, false)
+      if (isReply) {
+        replies.push(isReply)
+      }
+    })
+    replies.forEach(item => {
+      addComment(item, true)
     })
   }).catch((error) => {
     console.log('could not fetch : ' + url)
@@ -82,9 +89,19 @@ let newCommentEvent = () => {
     console.log('in res block:', res)
     return res.json()
   })
-  soc.emit('newComment', commentJSON)
+  // soc.emit('newComment', commentJSON)
 }
-let addComment = (data) => {
+let addComment = (data, isReply) => {
+  console.log('adding:', data.by, isReply)
+  if (!isReply && data.parent_id) {
+    console.log('has parent')
+    return data
+  }
+  let parent
+  if (isReply) {
+    console.log('parent:',data.parent_id)
+    parent = document.getElementById(data.parent_id)
+  }
   if (!document.getElementById('comment_x')) {
     let comment = document.createElement('div')
     comment.setAttribute('class', '.container')
@@ -96,18 +113,29 @@ let addComment = (data) => {
   let time = document.createElement('small')
   let cont = document.createElement('p')
   let comDiv = document.createElement('div')
+  let comFooter = document.createElement('footer')
+  let reply = document.createElement('span')
   comDiv.setAttribute('class', 'col-sm-10 well')
 
   if (data !== null && data !== undefined) {
-    name.textContent = data['by'] + '  '
-    time.textContent = data['time']
-    cont.textContent = data['content']
+    name.textContent = data.by + '  '
+    time.textContent = data.time
+    cont.textContent = data.content
+    reply.textContent = 'Reply'
+    comDiv.setAttribute('id', data.comment_id)
   }
   comment.setAttribute('class', '.container')
   comDiv.appendChild(name)
   name.appendChild(time)
   comDiv.appendChild(cont)
-  comment.insertBefore(comDiv, comment.firstChild)
+  comFooter.appendChild(reply)
+  comDiv.appendChild(comFooter)
+  if (!isReply) {
+    comment.insertBefore(comDiv, comment.firstChild)
+  } 
+  if(isReply) {
+    parent.appendChild(comDiv)
+  }
 }
 
 soc = io.connect('http://localhost:5432')

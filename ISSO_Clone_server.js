@@ -36,22 +36,17 @@ app.get('/', function (req, res) {
 
 app.post('/threadDetails', async function (req, res) {
   let art = req.body.thread
-  console.log('get route for threadDetails for :', art)
-  let comments = await ISSO_DB.collection('comments').find({thread_id: parseInt(art)}).toArray()
-  // console.log('data from db:', comments)
+  let comments = await ISSO_DB.collection('comments').find({ thread_id: parseInt(art) }).toArray()
   res.header('Content-Type', 'application/json')
-  // res.header('Access-Control-Allow-Origin', 'http://localhost:9000')
   res.send(JSON.stringify(comments))
-//   res.sendFile(path.join(__dirname, '/index.html'))
 })
 
 app.post('/saveComment', async function (req, res) {
-  let data = req.body.app_id
-  let commentJSON = {'app_id': 'xyzBlog', 'thread_id': 111111, 'id': 111111, 'parent_id': null, 'content': 'new', 'msg': 'new', 'by': 'sindhu', 'user_id': null, 'time': 'Wed Apr 11 2018 16:00:48 GMT 0530 (India Standard Time)'}
-  console.log('route save comment:', data)
-  commentJSON = JSON.parse(commentJSON)
-  let saved = await ISSO_DB.collection('comments').insert(commentJSON)
-  console.log('saved?', saved)
+  let data = req.body
+  data.comment_id = Math.floor((Math.random() * 1000000))
+  let saved = await ISSO_DB.collection('comments').insert(data)
+  console.log('saved?', saved) 
+  io.to(data.thread_id).emit('updateClients', data)
 })
 // Socket communication
 io.on('connection', soc => {
