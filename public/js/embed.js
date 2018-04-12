@@ -1,14 +1,12 @@
 const commentDiv = document.querySelector('#post_x')
 
 const loadISSO_Clone = (whereToAppendForm, isReply) => {
-  let commentHead = document.createElement('h4')
   let formDiv = document.createElement('div')
   let textarea = document.createElement('textarea')
   let inputName = document.createElement('input')
   let submitBtn = document.createElement('button')
   let commentContainer = document.createElement('form')
 
-  commentHead.innerHTML = 'Leave a Comment:'
   formDiv.setAttribute('class', 'form-group')
   textarea.setAttribute('id', 'comment-input')
   textarea.setAttribute('class', 'form-control')
@@ -19,16 +17,11 @@ const loadISSO_Clone = (whereToAppendForm, isReply) => {
   submitBtn.addEventListener('click', newCommentEvent)
   submitBtn.innerHTML = 'Submit'
 
-  if (!isReply) {
-    commentContainer.appendChild(commentHead)
-  }
   formDiv.appendChild(textarea)
   formDiv.appendChild(inputName)
   commentContainer.appendChild(formDiv)
   commentContainer.appendChild(submitBtn)
-  commentContainer.appendChild(document.createElement('br'))
-  commentContainer.appendChild(document.createElement('br'))
-
+  
   whereToAppendForm.appendChild(commentContainer)
   if (isReply) {
     commentContainer.setAttribute('class', 'reply hidden')
@@ -37,10 +30,48 @@ const loadISSO_Clone = (whereToAppendForm, isReply) => {
 
 const loadLogIn = () => {
   let userDiv = document.createElement('div')
-  let userName = document.createElement('text')
-  userName.textContent = 'Sindhu'
+  let loginDiv = document.createElement('div')
+  let user = document.createElement('a')
+  let userName = document.createElement('input')
+  let pwd = document.createElement('input')
+  let pwdConfirm = document.createElement('input')
+  let signupLabel = document.createElement('label')
+  let signupRadio = document.createElement('input')
+  let loginBtn = document.createElement('button')
+  user.textContent = 'Login/Signup '
+  user.addEventListener('click', toggleUserMenu)
+  signupRadio.addEventListener('click', toggleConfirmPwd)
+  loginBtn.textContent = 'Login/Signup '
+  signupLabel.textContent = 'Signup'
+  signupLabel.setAttribute('class', 'badge badge-default')
+  signupRadio.setAttribute('id', 'signup')
+  signupRadio.setAttribute('class', 'radio disabled')
+  signupRadio.setAttribute('type', 'checkbox')
+  loginBtn.setAttribute('class', 'btn btn-success')
+  userDiv.setAttribute('class', 'user-div')
+  user.setAttribute('class', 'user-menu')
+  userName.setAttribute('placeholder', 'User Name')
+  pwd.setAttribute('placeholder', 'Password')
+  pwdConfirm.setAttribute('id', 'confirmpwd')
+  pwdConfirm.setAttribute('class', 'hidden')
+  pwdConfirm.setAttribute('placeholder', 'Confirm Password')
+  userName.setAttribute('width', '100%')
+  pwd.setAttribute('width', '100%')
+  pwdConfirm.setAttribute('width', '100%')
+  userName.setAttribute('class', 'form-control')
+  pwd.setAttribute('class', 'form-control')
+  pwdConfirm.setAttribute('class', 'form-control hidden')
+  loginDiv.setAttribute('class', 'login-form hidden')
 
-  userDiv.appendChild(userName)
+  signupLabel.appendChild(signupRadio)
+  loginDiv.appendChild(signupLabel)
+  loginDiv.appendChild(userName)
+  loginDiv.appendChild(pwd)
+  loginDiv.appendChild(pwdConfirm)
+  loginDiv.appendChild(loginBtn)
+  userDiv.appendChild(user)
+  userDiv.appendChild(loginDiv)
+  
   commentDiv.appendChild(userDiv)
 }
 function loadComments () {
@@ -59,24 +90,20 @@ function loadComments () {
         replies.push(isReply)
       }
     })
-    console.log('replies w/o parent:',replies)
     replies.forEach(item=>{
       let isReply = addComment(item, false)
       if (isReply) {
         replies.push(isReply)
       }
     })
-    console.log('replies w/o parent:',replies)
   }).catch((error) => {
     console.log('could not fetch : ' + url)
     console.error(error)
   })
 }
 
-
 let newCommentEvent = (e) => {
-  e.preventDefault()
-  console.log(e)
+  // e.preventDefault()
   let loc = e.target.parentElement.parentElement.id
   try {
     let commentJSON = {
@@ -88,7 +115,6 @@ let newCommentEvent = (e) => {
       user_id: null,
       time: Date()
     }
-    console.log('new comment: ', commentJSON)
     let url = 'http://localhost:5432/saveComment'
     fetch(url, {
       method: 'POST',
@@ -107,10 +133,7 @@ let newCommentEvent = (e) => {
 let addComment = (data, isReply) => {
   let parentDiv
   if (!isNaN(parseInt(data.parent_id))) {
-    console.log('has parent:', parseInt(data.parent_id))
-    console.log('child:', parseInt(data.comment_id))
     parentDiv = document.getElementById(data.parent_id)
-    console.log(parentDiv)
     if (!parentDiv) {
       return data
     }
@@ -146,7 +169,6 @@ let addComment = (data, isReply) => {
   name.appendChild(time)
   comDiv.appendChild(cont)
   comFooter.appendChild(reply)
-  // comFooter.appendChild(del)
   comDiv.appendChild(comFooter)
 
   loadISSO_Clone(comDiv, true)
@@ -170,6 +192,26 @@ const replyComment = (e) => {
 
 const delComment = (e) => {
   console.log(artId)
+}
+
+const toggleUserMenu = (e) => {
+  let loginForm = e.target.parentElement.firstChild.nextSibling
+  let display = loginForm.getAttribute('class')
+  if (display === 'login-form hidden') {
+    loginForm.setAttribute('class', 'login-form')
+  } else if (display === 'login-form') {
+    loginForm.setAttribute('class', 'login-form hidden')
+  }
+}
+
+const toggleConfirmPwd = (e) => {
+  let confirmPwd = document.getElementById('confirmpwd')
+  let checked = e.target.checked
+  if (checked) {
+    confirmPwd.setAttribute('class', 'form-control')
+  } else {
+    confirmPwd.setAttribute('class', 'hidden')
+  }
 }
 
 loadLogIn()
