@@ -16,7 +16,6 @@ mongo.connect('mongodb://localhost:27017/', (err, db) => {
   } else {
     console.log('connected to mongodb...')
     ISSO_DB = db.db('ISSO_Clone_DB')
-    // console.log(ISSO_DB)
   }
 })
 // Middlewares
@@ -36,7 +35,7 @@ app.get('/', function (req, res) {
 
 app.post('/threadDetails', async function (req, res) {
   let art = req.body.thread
-  let comments = await ISSO_DB.collection('comments').find({ thread_id: parseInt(art) }).toArray()
+  let comments = await ISSO_DB.collection('comments').find({thread_id: parseInt(art)}).toArray()
   res.header('Content-Type', 'application/json')
   res.send(JSON.stringify(comments))
 })
@@ -45,8 +44,10 @@ app.post('/saveComment', async function (req, res) {
   let data = req.body
   data.comment_id = Math.floor((Math.random() * 1000000))
   let saved = await ISSO_DB.collection('comments').insert(data)
-  console.log('saved?', saved) 
+  console.log('saved data?', data) 
   io.to(data.thread_id).emit('updateClients', data)
+  res.header('Content-Type', 'application/json')
+  res.send({saved:'yes'})
 })
 // Socket communication
 io.on('connection', soc => {

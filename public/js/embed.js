@@ -1,11 +1,12 @@
 const commentDiv = document.querySelector('#post_x')
 
-const loadISSO_Clone = () => {
+const loadISSO_Clone = (whereToAppendForm, isReply) => {
   let commentHead = document.createElement('h4')
   let formDiv = document.createElement('div')
   let textarea = document.createElement('textarea')
   let inputName = document.createElement('input')
   let submitBtn = document.createElement('button')
+  let commentContainer = document.createElement('form')
 
   commentHead.innerHTML = 'Leave a Comment:'
   formDiv.setAttribute('class', 'form-group')
@@ -15,31 +16,42 @@ const loadISSO_Clone = () => {
   inputName.setAttribute('class', 'form-control')
   inputName.setAttribute('placeholder', 'name (optional)')
   submitBtn.setAttribute('class', 'btn btn-success')
-  submitBtn.setAttribute('onclick', 'newCommentEvent()')
+  submitBtn.addEventListener('click', newCommentEvent)
   submitBtn.innerHTML = 'Submit'
 
-  commentDiv.appendChild(commentHead)
+  if (!isReply) {
+    commentContainer.appendChild(commentHead)
+  }
   formDiv.appendChild(textarea)
   formDiv.appendChild(inputName)
-  commentDiv.appendChild(formDiv)
-  commentDiv.appendChild(submitBtn)
-  commentDiv.appendChild(document.createElement('br'))
-  commentDiv.appendChild(document.createElement('br'))
+  commentContainer.appendChild(formDiv)
+  commentContainer.appendChild(submitBtn)
+  commentContainer.appendChild(document.createElement('br'))
+  commentContainer.appendChild(document.createElement('br'))
+
+  whereToAppendForm.appendChild(commentContainer)
+  if (isReply) {
+    commentContainer.setAttribute('class', 'reply hidden')
+  }
 }
 
-function loadComments() {
+const loadLogIn = () => {
+  let userDiv = document.createElement('div')
+  let userName = document.createElement('text')
+  userName.textContent = 'Sindhu'
+
+  userDiv.appendChild(userName)
+  commentDiv.appendChild(userDiv)
+}
+function loadComments () {
   let url = 'http://localhost:5432/threadDetails'
-  console.log('fetching commented for article: ', artId)
   fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({thread: artId})
-    // mode: 'no-cors'
+    body: JSON.stringify({ thread: artId })
   }).then((res) => {
-    console.log('in res block:', res)
     return res.json()
   }).then((commentsJSON) => {
-    console.log('comments:', commentsJSON)
     let replies = []
     commentsJSON.forEach(item => {
       let isReply = addComment(item, false)
@@ -47,60 +59,61 @@ function loadComments() {
         replies.push(isReply)
       }
     })
-    replies.forEach(item => {
-      addComment(item, true)
+    console.log('replies w/o parent:',replies)
+    replies.forEach(item=>{
+      let isReply = addComment(item, false)
+      if (isReply) {
+        replies.push(isReply)
+      }
     })
+    console.log('replies w/o parent:',replies)
   }).catch((error) => {
     console.log('could not fetch : ' + url)
     console.error(error)
   })
-  console.log('fetched')
 }
 
-loadISSO_Clone()
-loadComments()
 
-let newComment = document.querySelector('#comment-input')
-let commenter = document.querySelector('#comment-name')
-
-let newCommentEvent = () => {
-  let formData = new FormData()
-  formData.append('app_id', 'xyzBlog')
-  console.log('form data:', formData)
-  let commentJSON = {
-    app_id: 'xyzBlog',
-    thread_id: artId,
-    id: artId,
-    parent_id: null,
-    content: newComment.value,
-    msg: newComment.value,
-    by: commenter.value,
-    user_id: null,
-    time: Date()
+let newCommentEvent = (e) => {
+  e.preventDefault()
+  console.log(e)
+  let loc = e.target.parentElement.parentElement.id
+  try {
+    let commentJSON = {
+      app_id: appId,
+      thread_id: artId,
+      parent_id: loc,
+      content: e.path[1][0].value,
+      by: e.path[1][1].value,
+      user_id: null,
+      time: Date()
+    }
+    console.log('new comment: ', commentJSON)
+    let url = 'http://localhost:5432/saveComment'
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(commentJSON)
+    }).then((res) => {
+      return res.json()
+    }).then((json) => {
+      console.log('saved?', json)
+    })
+  } catch (err) {
+    console.log(err)
   }
-  let url = 'http://localhost:5432/saveComment'
-  console.log('saving comment ', commentJSON)
-  fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    // headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: JSON.stringify(commentJSON)
-  }).then((res) => {
-    console.log('in res block:', res)
-    return res.json()
-  })
-  // soc.emit('newComment', commentJSON)
 }
+
 let addComment = (data, isReply) => {
-  console.log('adding:', data.by, isReply)
-  if (!isReply && data.parent_id) {
-    console.log('has parent')
-    return data
-  }
-  let parent
-  if (isReply) {
-    console.log('parent:',data.parent_id)
-    parent = document.getElementById(data.parent_id)
+  let parentDiv
+  if (!isNaN(parseInt(data.parent_id))) {
+    console.log('has parent:', parseInt(data.parent_id))
+    console.log('child:', parseInt(data.comment_id))
+    parentDiv = document.getElementById(data.parent_id)
+    console.log(parentDiv)
+    if (!parentDiv) {
+      return data
+    }
   }
   if (!document.getElementById('comment_x')) {
     let comment = document.createElement('div')
@@ -114,14 +127,18 @@ let addComment = (data, isReply) => {
   let cont = document.createElement('p')
   let comDiv = document.createElement('div')
   let comFooter = document.createElement('footer')
-  let reply = document.createElement('span')
+  let reply = document.createElement('small')
+  let del = document.createElement('small')
   comDiv.setAttribute('class', 'col-sm-10 well')
+  reply.addEventListener('click', replyComment)
+  del.addEventListener('click', delComment)
 
   if (data !== null && data !== undefined) {
     name.textContent = data.by + '  '
     time.textContent = data.time
     cont.textContent = data.content
-    reply.textContent = 'Reply'
+    reply.textContent = 'Reply ' // add padding
+    del.textContent = ' Delete'
     comDiv.setAttribute('id', data.comment_id)
   }
   comment.setAttribute('class', '.container')
@@ -129,14 +146,35 @@ let addComment = (data, isReply) => {
   name.appendChild(time)
   comDiv.appendChild(cont)
   comFooter.appendChild(reply)
+  // comFooter.appendChild(del)
   comDiv.appendChild(comFooter)
-  if (!isReply) {
+
+  loadISSO_Clone(comDiv, true)
+
+  if (parentDiv) {
+    parentDiv.appendChild(comDiv)
+  } else {
     comment.insertBefore(comDiv, comment.firstChild)
-  } 
-  if(isReply) {
-    parent.appendChild(comDiv)
   }
 }
+
+const replyComment = (e) => {
+  let replyComDiv = e.target.parentElement
+  let display = replyComDiv.nextSibling.getAttribute('class')
+  if (display === 'reply hidden') {
+    replyComDiv.nextSibling.setAttribute('class', 'reply')
+  } else if (display === 'reply') {
+    replyComDiv.nextSibling.setAttribute('class', 'reply hidden')
+  }
+}
+
+const delComment = (e) => {
+  console.log(artId)
+}
+
+loadLogIn()
+loadISSO_Clone(commentDiv)
+loadComments()
 
 soc = io.connect('http://localhost:5432')
 soc.on('connect', () => {
@@ -144,6 +182,6 @@ soc.on('connect', () => {
   console.log('client connected thru socket -room:' + artId)
 })
 soc.on('updateClients', data => {
-  console.log('soc event - update comment: ' + 'commentId ' + data.commentId + ' for artId:' + data.id)
+  console.log('soc event - update comment: ', data)
   addComment(data)
 })
