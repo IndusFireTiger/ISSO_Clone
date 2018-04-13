@@ -1,4 +1,6 @@
 const commentDiv = document.querySelector('#post_x')
+let userLoggedIn = false
+let userDetails = {}
 
 const loadISSO_Clone = (whereToAppendForm, isReply) => {
   let formDiv = document.createElement('div')
@@ -8,9 +10,9 @@ const loadISSO_Clone = (whereToAppendForm, isReply) => {
   let commentContainer = document.createElement('form')
 
   formDiv.setAttribute('class', 'form-group')
-  textarea.setAttribute('id', 'comment-input')
+  // textarea.setAttribute('id', 'comment-input')
   textarea.setAttribute('class', 'form-control')
-  inputName.setAttribute('id', 'comment-name')
+  // inputName.setAttribute('id', 'comment-name')
   inputName.setAttribute('class', 'form-control')
   inputName.setAttribute('placeholder', 'name (optional)')
   submitBtn.setAttribute('class', 'btn btn-success')
@@ -21,26 +23,32 @@ const loadISSO_Clone = (whereToAppendForm, isReply) => {
   formDiv.appendChild(inputName)
   commentContainer.appendChild(formDiv)
   commentContainer.appendChild(submitBtn)
-  
+
   whereToAppendForm.appendChild(commentContainer)
   if (isReply) {
     commentContainer.setAttribute('class', 'reply hidden')
+  } else {
+    inputName.setAttribute('id', 'comment-by')
   }
 }
 
 const loadLogIn = () => {
   let userDiv = document.createElement('div')
   let loginDiv = document.createElement('div')
-  let user = document.createElement('a')
+  let user = document.createElement('text')
+  let userMenu = document.createElement('a')
   let userName = document.createElement('input')
   let pwd = document.createElement('input')
   let pwdConfirm = document.createElement('input')
   let signupLabel = document.createElement('label')
   let signupRadio = document.createElement('input')
-  let loginBtn = document.createElement('button')
-  user.textContent = 'Login/Signup '
-  user.addEventListener('click', toggleUserMenu)
+  let loginBtn = document.createElement('input')
+  user.setAttribute('id', 'userDisplayName')
+  user.textContent = userDetails.name || 'None'
+  userMenu.textContent = 'User Menu '
+  userMenu.addEventListener('click', toggleUserMenu)
   signupRadio.addEventListener('click', toggleConfirmPwd)
+  loginBtn.addEventListener('click', attemptLogin)
   loginBtn.textContent = 'Login/Signup '
   signupLabel.textContent = 'Signup'
   signupLabel.setAttribute('class', 'badge badge-default')
@@ -48,10 +56,15 @@ const loadLogIn = () => {
   signupRadio.setAttribute('class', 'radio disabled')
   signupRadio.setAttribute('type', 'checkbox')
   loginBtn.setAttribute('class', 'btn btn-success')
+  loginBtn.setAttribute('type', 'submit')
   userDiv.setAttribute('class', 'user-div')
-  user.setAttribute('class', 'user-menu')
+  userMenu.setAttribute('class', 'user-menu')
   userName.setAttribute('placeholder', 'User Name')
+  userName.setAttribute('id', 'username')
   pwd.setAttribute('placeholder', 'Password')
+  pwd.setAttribute('type', 'password')
+  pwd.setAttribute('id', 'pwd')
+  pwdConfirm.setAttribute('type', 'password')
   pwdConfirm.setAttribute('id', 'confirmpwd')
   pwdConfirm.setAttribute('class', 'hidden')
   pwdConfirm.setAttribute('placeholder', 'Confirm Password')
@@ -61,6 +74,7 @@ const loadLogIn = () => {
   userName.setAttribute('class', 'form-control')
   pwd.setAttribute('class', 'form-control')
   pwdConfirm.setAttribute('class', 'form-control hidden')
+  loginDiv.setAttribute('id', 'user-login-form')
   loginDiv.setAttribute('class', 'login-form hidden')
 
   signupLabel.appendChild(signupRadio)
@@ -70,19 +84,22 @@ const loadLogIn = () => {
   loginDiv.appendChild(pwdConfirm)
   loginDiv.appendChild(loginBtn)
   userDiv.appendChild(user)
+  userDiv.appendChild(document.createElement('br'))
+  userDiv.appendChild(userMenu)
   userDiv.appendChild(loginDiv)
-  
   commentDiv.appendChild(userDiv)
 }
+
 function loadComments () {
+  console.log('fetching threadDetails')
   let url = 'http://localhost:5432/threadDetails'
-  fetch(url, {
+  let fetchMode = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ thread: artId })
-  }).then((res) => {
-    return res.json()
-  }).then((commentsJSON) => {
+  }
+
+  fetch(url, fetchMode).then((res) => { return res.json() }).then((commentsJSON) => {
     let replies = []
     commentsJSON.forEach(item => {
       let isReply = addComment(item, false)
@@ -90,7 +107,7 @@ function loadComments () {
         replies.push(isReply)
       }
     })
-    replies.forEach(item=>{
+    replies.forEach(item => {
       let isReply = addComment(item, false)
       if (isReply) {
         replies.push(isReply)
@@ -103,31 +120,29 @@ function loadComments () {
 }
 
 let newCommentEvent = (e) => {
-  // e.preventDefault()
+  e.preventDefault()
   let loc = e.target.parentElement.parentElement.id
-  try {
-    let commentJSON = {
-      app_id: appId,
-      thread_id: artId,
-      parent_id: loc,
-      content: e.path[1][0].value,
-      by: e.path[1][1].value,
-      user_id: null,
-      time: Date()
-    }
-    let url = 'http://localhost:5432/saveComment'
-    fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(commentJSON)
-    }).then((res) => {
-      return res.json()
-    }).then((json) => {
-      console.log('saved?', json)
-    })
-  } catch (err) {
-    console.log(err)
+  let commentJSON = {
+    app_id: appId,
+    thread_id: artId,
+    parent_id: loc,
+    content: e.path[1][0].value,
+    by: e.path[1][1].value,
+    user_id: null,
+    time: Date()
   }
+  let url = 'http://localhost:5432/saveComment'
+  let fetchMode = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(commentJSON)
+  }
+
+  fetch(url, fetchMode).then((res) => { return res.json() }).then((json) => {
+    console.log('saved?', json)
+  }).catch((err) => {
+    console.log(err)
+  })
 }
 
 let addComment = (data, isReply) => {
@@ -195,7 +210,7 @@ const delComment = (e) => {
 }
 
 const toggleUserMenu = (e) => {
-  let loginForm = e.target.parentElement.firstChild.nextSibling
+  let loginForm = e.target.nextSibling
   let display = loginForm.getAttribute('class')
   if (display === 'login-form hidden') {
     loginForm.setAttribute('class', 'login-form')
@@ -212,6 +227,44 @@ const toggleConfirmPwd = (e) => {
   } else {
     confirmPwd.setAttribute('class', 'hidden')
   }
+}
+
+const attemptLogin = (e) => {
+  let mode = document.getElementById('signup').checked
+  let username = document.getElementById('username')
+  let pwd = document.getElementById('pwd')
+  let confirmpwd = document.getElementById('confirmpwd')
+  // console.log(mode ? 'signup' : 'login')
+  let loginDetails = {
+    signup: mode,
+    username: username.value,
+    pwd: pwd.value,
+    confirmpwd: confirmpwd.value
+  }
+
+  let url = 'http://localhost:5432/login'
+  let fetchMode = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(loginDetails)
+  }
+
+  fetch(url, fetchMode).then((res) => { return res.json() }).then((result) => {
+    console.log(result)
+    if (result.status === 'login successful') {
+      userLoggedIn = true
+      userDetails.name = loginDetails.username
+      console.log('display:', loginDetails.username)
+      let user = document.getElementById('userDisplayName')
+      user.textContent = 'Hi, ' + loginDetails.username
+      document.getElementById('user-login-form').setAttribute('class', 'login-form hidden')
+      let commenter = document.getElementById('comment-by')
+      console.log(commenter)
+      commenter.setAttribute('placeholder', '')
+      commenter.value = loginDetails.username
+      commenter.disabled = true
+    }
+  })
 }
 
 loadLogIn()
