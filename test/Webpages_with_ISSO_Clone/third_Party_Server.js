@@ -7,10 +7,10 @@ app.listen('9000', function () {
 })
 
 // Middlewares
-// app.use('/', function (req, res, next) {
-//   console.log(__dirname + req.url)
-//   next()
-// })
+app.use('/', function (req, res, next) {
+  console.log(__dirname + req.url)
+  next()
+})
 app.use(express.static('public'))
 
 // Handlers

@@ -7,10 +7,12 @@ const bodyParser = require('body-parser')
 const mongo = require('mongodb').MongoClient
 const cors = require('cors')
 const session = require('express-session')
+const bcrypt = require('bcrypt')
 
 server.listen('5432', function () { console.log('ISSO_Clone server running on 5432...') })
 let ISSO_DB
 let ISSO_Users
+let salt = 10
 
 mongo.connect('mongodb://localhost:27017/', (err, db) => {
   if (err) {
@@ -30,7 +32,7 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use(express.static('public'))
-app.use(session({secret: '1234'}))
+app.use(session({ secret: '1234' }))
 
 // Handlers
 app.get('/', function (req, res) {
@@ -41,25 +43,50 @@ app.post('/login', async function (req, res) {
   console.log('req.session:', req.session)
   let loginDetails = req.body
   console.log('loginDetails', loginDetails)
-  let userDetails = await ISSO_Users.collection('users').find({username: loginDetails.username}).toArray()
+  let userDetails = await ISSO_Users.collection('users').find({ username: loginDetails.username }).toArray()
   console.log('user exists:', userDetails)
   if (loginDetails.signup) {
     console.log('attempting signup')
     if (userDetails.length >= 1) {
-      res.send({status: 'user exists'})
+      res.send({ status: 'user exists' })
     } else {
-      let userSigned = await ISSO_Users.collection('users').insert(loginDetails)
-      console.log('inserted user', userSigned)
-      res.send({status: 'inserted user'})
+      console.log('req.body.password', loginDetails.pwd)
+      bcrypt.hash(loginDetails.pwd, salt, (err, hash) => {
+        if (err) {
+          throw err
+        }
+        console.log('hash', hash)
+        let user = {
+          username: loginDetails.username,
+          pwdHash: hash
+        }
+        let userSigned = ISSO_Users.collection('users').insert(user)
+        console.log('inserted user', userSigned)
+        res.send({ status: 'inserted user' })
+      })
     }
   } else {
     console.log('attempting login')
-    if (userDetails.length >= 1 && userDetails[0].pwd === loginDetails.pwd) {
-      console.log('pwd matched')
+
+    if (userDetails.length >= 1) {
+      // userDetails[0].pwd === loginDetails.pwd
+      bcrypt.compare(loginDetails.pwd, userDetails[0].pwdHash, (err, result) => {
+        if (err) {
+          throw err
+        }
+        if (result) {
+          // req.session.email = req.body.email
+          // res.redirect('/')
+          console.log('pwd matched')
+        } else {
+          // res.redirect('/login')
+          res.send({ status: 'login failed' })
+        }
+      })
       // req.session.user = loginDetails.username
-      res.send({status: 'login successful'})
+      res.send({ status: 'login successful' })
     } else {
-      res.send({status: 'login failed'})
+      res.send({ status: 'no such user' })
     }
   }
 })
@@ -67,7 +94,7 @@ app.post('/login', async function (req, res) {
 app.post('/threadDetails', async function (req, res) {
   console.log(req.body)
   let art = req.body.thread
-  let comments = await ISSO_DB.collection('comments').find({thread_id: parseInt(art)}).toArray()
+  let comments = await ISSO_DB.collection('comments').find({ thread_id: parseInt(art) }).toArray()
   res.header('Content-Type', 'application/json')
   res.send(JSON.stringify(comments))
 })
@@ -79,7 +106,7 @@ app.post('/saveComment', async function (req, res) {
   console.log('saved data?', data)
   io.to(data.thread_id).emit('updateClients', data)
   res.header('Content-Type', 'application/json')
-  res.send({saved: 'yes'})
+  res.send({ saved: 'yes' })
 })
 // Socket communication
 io.on('connection', soc => {

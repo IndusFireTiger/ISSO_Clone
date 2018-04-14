@@ -43,14 +43,17 @@ const loadLogIn = () => {
   let signupLabel = document.createElement('label')
   let signupRadio = document.createElement('input')
   let loginBtn = document.createElement('input')
-  user.setAttribute('id', 'userDisplayName')
-  user.textContent = userDetails.name || 'None'
-  userMenu.textContent = 'User Menu '
+
   userMenu.addEventListener('click', toggleUserMenu)
   signupRadio.addEventListener('click', toggleConfirmPwd)
   loginBtn.addEventListener('click', attemptLogin)
+
+  user.textContent = userDetails.name || 'None'
+  userMenu.textContent = 'User Menu '
   loginBtn.textContent = 'Login/Signup '
   signupLabel.textContent = 'Signup'
+
+  user.setAttribute('id', 'userDisplayName')
   signupLabel.setAttribute('class', 'badge badge-default')
   signupRadio.setAttribute('id', 'signup')
   signupRadio.setAttribute('class', 'radio disabled')
@@ -92,6 +95,7 @@ const loadLogIn = () => {
 
 function loadComments () {
   console.log('fetching threadDetails')
+
   let url = 'http://localhost:5432/threadDetails'
   let fetchMode = {
     method: 'POST',
@@ -131,6 +135,7 @@ let newCommentEvent = (e) => {
     user_id: null,
     time: Date()
   }
+
   let url = 'http://localhost:5432/saveComment'
   let fetchMode = {
     method: 'POST',
@@ -167,9 +172,6 @@ let addComment = (data, isReply) => {
   let comFooter = document.createElement('footer')
   let reply = document.createElement('small')
   let del = document.createElement('small')
-  comDiv.setAttribute('class', 'col-sm-10 well')
-  reply.addEventListener('click', replyComment)
-  del.addEventListener('click', delComment)
 
   if (data !== null && data !== undefined) {
     name.textContent = data.by + '  '
@@ -179,7 +181,12 @@ let addComment = (data, isReply) => {
     del.textContent = ' Delete'
     comDiv.setAttribute('id', data.comment_id)
   }
+  
+  reply.addEventListener('click', replyComment)
+  del.addEventListener('click', delComment)
+  comDiv.setAttribute('class', 'col-sm-10 well')
   comment.setAttribute('class', '.container')
+  
   comDiv.appendChild(name)
   name.appendChild(time)
   comDiv.appendChild(cont)
@@ -264,6 +271,9 @@ const attemptLogin = (e) => {
       commenter.value = loginDetails.username
       commenter.disabled = true
     }
+  }).catch((error) => {
+    console.log('could not fetch : ' + url)
+    console.error(error)
   })
 }
 
